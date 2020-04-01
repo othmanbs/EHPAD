@@ -1,0 +1,136 @@
+sbit LCD_RS at RB4_bit;
+sbit LCD_EN at RB5_bit;
+sbit LCD_D4 at RB0_bit;
+sbit LCD_D5 at RB1_bit;
+sbit LCD_D6 at RB2_bit;
+sbit LCD_D7 at RB3_bit;
+sbit LCD_RS_Direction at TRISB4_bit;
+sbit LCD_EN_Direction at TRISB5_bit;
+sbit LCD_D4_Direction at TRISB0_bit;
+sbit LCD_D5_Direction at TRISB1_bit;
+sbit LCD_D6_Direction at TRISB2_bit;
+sbit LCD_D7_Direction at TRISB3_bit;
+void main()
+{
+    int i =0;
+    PORTA = 0;
+    PORTB = 0; // PORTB initialisation ’0’
+    PORTC = 0;
+    PORTD = 0;
+    PORTE=0;
+    TRISA = 0;
+    TRISB = 0; // Configure PORTB en outputs
+    TRISC = 0;
+    TRISD = 0;
+    TRISE=1;
+    ADCON1=0b00001011;
+    ADCON2=0b10000001;
+    Lcd_Init();
+    Lcd_Cmd(_LCD_CLEAR);
+    Lcd_Cmd(_LCD_CURSOR_OFF);
+    do {         // capteur de pression
+      }
+      while(PORTE.RE0==0);
+      Lcd_Out(1,1,"Capteur");
+      Lcd_Out(2,1,"de pression ");
+      PORTD=0b00000000;
+      delay_ms(3000);
+      Lcd_Cmd(_LCD_CLEAR);
+      Lcd_Out(1,1,"pression");
+      Lcd_Out(2,1,"nulle ");         // ca veut dire que le patient est debout
+      PORTD=0b11111111;
+      delay_ms(3000);
+      Lcd_Cmd(_LCD_CLEAR);
+      Lcd_Out(1,1,"Bonjour MR");
+      Lcd_Out(2,1,"David ");
+      delay_ms(3000);
+      Lcd_Cmd(_LCD_CLEAR);
+      Lcd_Out(1,1,"Quelle belle");
+      Lcd_Out(2,1,"journée :) ");
+    do {
+      }
+      while(PORTE.RE0==0);
+      Lcd_Out(1,1,"Capteur");
+      Lcd_Out(2,1,"de pression ");                   //cas ou le patient dort
+      PORTD=0b00000000;
+      delay_ms(3000);
+      Lcd_Cmd(_LCD_CLEAR);
+      Lcd_Out(1,1,"le patient");
+      Lcd_Out(2,1,"dort ");
+      PORTD=0b11111111;
+      delay_ms(3000);
+      Lcd_Cmd(_LCD_CLEAR);
+      Lcd_Out(1,1,"il depasse");
+      Lcd_Out(2,1,"9h de sommeil");     // si il depasse les 9h de sommeil
+      delay_ms(3000);
+      Lcd_Cmd(_LCD_CLEAR);
+      Lcd_Out(1,1,"envoyer");
+      Lcd_Out(2,1,"infirmier");       // allerter l'infirmier  pour voir ce qui ce passe
+      delay_ms(3000);
+      Lcd_Cmd(_LCD_CLEAR);
+          i=0;
+          PORTD=0b00000000;
+          Lcd_Out(1,1,"appeler");
+          Lcd_Out(2,1,"Infirmier ...");
+          while(i<5)
+            {
+               i++;
+               PORTD=PORTD+1;
+               Sound_Init(&PORTE,1);
+               Sound_Play(200,700);
+               delay_ms(700);
+             }
+          Lcd_Cmd(_LCD_CLEAR);
+          PORTD=0b10101010;
+          Lcd_Out(1,1,"Tout va");
+          Lcd_Out(2,1,"bien :) ");     //fin du capteur pression
+
+      do {          // couche connectee
+      }
+      while(PORTE.RE0==0);
+      Lcd_Out(1,1,"Couche");
+      Lcd_Out(2,1,"connecter ");
+      PORTD=0b00000000;
+      delay_ms(3000);
+      Lcd_Cmd(_LCD_CLEAR);
+      Lcd_Out(1,1,"humidite");
+      Lcd_Out(2,1,"nulle");
+      PORTD=0b00000001;
+      delay_ms(3000);
+      Lcd_Cmd(_LCD_CLEAR);
+      Lcd_Out(1,1,"tout va");
+      Lcd_Out(2,1,"bien");
+      delay_ms(3000);
+      Lcd_Cmd(_LCD_CLEAR);
+
+      do {
+      }
+      while(PORTE.RE0==0);
+      Lcd_Out(1,1,"Couche");
+      Lcd_Out(2,1,"connecter ");
+      PORTD=0b00000000;
+      delay_ms(3000);
+      Lcd_Cmd(_LCD_CLEAR);
+      Lcd_Out(1,1,"humidite");
+      Lcd_Out(2,1,"elevee");
+      PORTD=0b00000001;
+      delay_ms(3000);
+      Lcd_Cmd(_LCD_CLEAR);
+      Lcd_Out(1,1,"changer");
+      Lcd_Out(2,1,"couche");
+      i=0;
+      PORTD=0b00000000;
+      while(i<5)
+            {
+               i++;
+               PORTD=PORTD+1;
+               Sound_Init(&PORTE,1);
+               Sound_Play(2000,700);
+               delay_ms(300);
+             }
+
+      Lcd_Cmd(_LCD_CLEAR);
+      Lcd_Out(1,1,"couche");
+      Lcd_Out(2,1,"changee");
+      PORTD=0b00000001;               // fin de la couche connectee
+}
