@@ -1,0 +1,166 @@
+sbit LCD_RS at RB4_bit;
+sbit LCD_EN at RB5_bit;
+sbit LCD_D4 at RB0_bit;
+sbit LCD_D5 at RB1_bit;
+sbit LCD_D6 at RB2_bit;
+sbit LCD_D7 at RB3_bit;
+sbit LCD_RS_Direction at TRISB4_bit;
+sbit LCD_EN_Direction at TRISB5_bit;
+sbit LCD_D4_Direction at TRISB0_bit;
+sbit LCD_D5_Direction at TRISB1_bit;
+sbit LCD_D6_Direction at TRISB2_bit;
+sbit LCD_D7_Direction at TRISB3_bit;
+void main()
+{
+    int i =0;
+    PORTA = 0;
+    PORTB = 0; // PORTB initialisation ’0’
+    PORTC = 0;
+    PORTD = 0;
+    PORTE=0;
+    TRISA = 0;
+    TRISB = 0; // Configure PORTB en outputs
+    TRISC = 0;
+    TRISD = 0;
+    TRISE=1;  // configurer le trisE en input pour utilier le bouton
+    ADCON1=0b00001011;
+    ADCON2=0b10000001;
+    Lcd_Init();
+    Lcd_Cmd(_LCD_CLEAR);
+    Lcd_Cmd(_LCD_CURSOR_OFF);
+    do {                      // capteur porte intelligente
+      }
+      while(PORTE.RE0==0);
+      PORTC=0b00001111;        // conditions initiale la porte est verouiller C0 C1 C1 s'allume
+      PORTD=0b10000000;   //si quelqu’un est devant la porte ==>  de la led D1 s'allume
+      Lcd_Out(1,1,"qlq devant"); //le capteur infrarouge de la porte detecte la presence de qlq
+      Lcd_Out(2,1,"la porte");
+      Delay_ms(5000);
+      Lcd_Cmd(_LCD_CLEAR);
+      Lcd_Out(1,1,"inconnu");// aucune reconnaissance
+      while(i<5)
+        {
+           i++;
+            //quelqu'un est devant la porte mais pas de reconnaissance
+            Delay_ms(100);
+            PORTD=0b11000000;        //il n y a pas eu de reconnaissance
+            Delay_ms(100);
+            PORTD=0b10000000;       //qlq est devant la porte
+        }
+        Lcd_Cmd(_LCD_CLEAR);
+        Lcd_Out(1,1,"Acces interdit"); // interdir l'acces a la porte
+        i=0;
+        while(i<5)
+          {
+             i++;
+             PORTD=PORTD+1;
+             Sound_Init(&PORTE,1);
+             Sound_Play(2000,200);     // declencher l'alarme
+             delay_ms(200);
+           }
+        PORTD=0b000100000;                                     //tentative d'intrusion
+        Delay_ms(4000);
+        Lcd_Cmd(_LCD_CLEAR);
+        PORTD=0b0000000;
+        Delay_ms(500);
+        i=0;
+        Lcd_Out(1,1,"appeler");
+        Lcd_Out(2,1,"responsable...");
+        while(i<5)
+          {
+             i++;
+             PORTD=PORTD+1;
+             Sound_Init(&PORTE,1); // sonnerie d'appel telephonique au responsable
+             Sound_Play(200,700);
+             delay_ms(700);
+           }
+           PORTD=0b00000000;
+           Lcd_Cmd(_LCD_CLEAR);
+           Lcd_Out(1,1,"essayez dans ");
+           Lcd_Out(2,1,"quelques minutes ");
+           Delay_ms(3000);
+           Lcd_Cmd(_LCD_CLEAR);
+           Delay_ms(4000);
+           Lcd_Out(1,1,"qlq devant");
+           Lcd_Out(2,1,"la porte");
+           PORTD=0b10000000;   //presence de qlq'un devant la porte ==>  de la led D1
+           Delay_ms(4000);
+           Lcd_Cmd(_LCD_CLEAR);
+           Lcd_Out(1,1,"Vous pouvez ");
+           Lcd_Out(2,1,"rentrer ");
+           PORTD=0b11111111;   //la personne est reconnue
+           Delay_ms(4000);
+           Lcd_Cmd(_LCD_CLEAR);
+           Lcd_Out(1,1,"la porte est ");
+           Lcd_Out(1,1,"deverouille ");
+           PORTD=0b00000000;       //reinitialisation du systeme d'alarme
+           PORTC=0b00000000;  //alarme off
+           Delay_ms(3000);
+           Lcd_Cmd(_LCD_CLEAR);
+           do {
+           }
+           while(PORTE.RE0==0);
+           Lcd_Out(1,1,"qlq devant");
+           Lcd_Out(2,1,"la porte");
+           Delay_ms(3000);
+           Lcd_Cmd(_LCD_CLEAR);
+           Lcd_Out(1,1,"Bonjour DR");
+           Lcd_Out(2,1,"Rentrez :)"); //reconnaissance digitale validée ? autorisation de mise en place de l’alarme
+           PORTC=0b00001111;       //mise en place de l’alarme
+           Delay_ms(3000);
+           Lcd_Cmd(_LCD_CLEAR);
+           Lcd_Out(1,1,"Porte verouiller ");
+           Delay_ms(3000);
+           Lcd_Cmd(_LCD_CLEAR);
+           do {                 // capteur de sante
+           }
+           while(PORTE.RE0==0);
+           Lcd_Out(1,1,"Bilan sante ");
+           Lcd_Out(2,1,"des patients");
+           Delay_ms(3000);
+           Lcd_Cmd(_LCD_CLEAR);
+           Lcd_Out(1,1,"Connexion a");
+           Lcd_Out(2,1,"la plateforme");
+           Delay_ms(3000);
+           Lcd_Cmd(_LCD_CLEAR);
+           Lcd_Out(1,1,"*");
+           PORTD=0b00000001;
+           Delay_ms(300);       //connexion chargement
+           Lcd_Cmd(_LCD_CLEAR);
+           Lcd_Out(1,1,"***");
+           PORTD=0b00000111;
+           Delay_ms(300);
+           Lcd_Cmd(_LCD_CLEAR);
+           Lcd_Out(1,1,"*********");
+           PORTD=0b00111111;
+           Delay_ms(300);
+           Lcd_Cmd(_LCD_CLEAR);
+           Lcd_Out(1,1,"*************");
+           PORTD=0b11111111;
+           Delay_ms(300);                   //fin
+           Lcd_Cmd(_LCD_CLEAR);
+           Lcd_Out(1,1,"mot de passe");    // cas ou le mot de passe est incorrecte
+           Lcd_Out(2,1,"ou id false");
+           i=0;
+           while(i<5)
+            {
+               i++;
+                //quelqu'un est devant la porte mais pas de reconnaissance
+                Delay_ms(100);
+                PORTD=0b10101010;        //il n y a pas eu de reconnaissance
+                Delay_ms(100);
+                PORTD=0b01010101;       //qlq est devant la porte
+            }
+           Lcd_Cmd(_LCD_CLEAR);             //dans le cas ou la connexion est reussie
+           Lcd_Out(1,1,"Veuillez");
+           Lcd_Out(2,1,"reessayer");
+           Delay_ms(3000);
+           Lcd_Cmd(_LCD_CLEAR);
+           Lcd_Out(1,1,"Bonjour DR");
+           Lcd_Out(2,1,"votre patient");
+           PORTD=0b00000011;
+           Delay_ms(3000);
+           Lcd_Cmd(_LCD_CLEAR);
+           Lcd_Out(1,1,"167bpm 37C ");
+           Lcd_Out(2,1,"140/90mmHg ");
+}
