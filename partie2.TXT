@@ -1,0 +1,121 @@
+sbit LCD_RS at RB4_bit;
+sbit LCD_EN at RB5_bit;
+sbit LCD_D4 at RB0_bit;
+sbit LCD_D5 at RB1_bit;
+sbit LCD_D6 at RB2_bit;
+sbit LCD_D7 at RB3_bit;
+sbit LCD_RS_Direction at TRISB4_bit;
+sbit LCD_EN_Direction at TRISB5_bit;
+sbit LCD_D4_Direction at TRISB0_bit;
+sbit LCD_D5_Direction at TRISB1_bit;
+sbit LCD_D6_Direction at TRISB2_bit;
+sbit LCD_D7_Direction at TRISB3_bit;
+void main()
+{                           // suite du capteur de sante
+    int i =0;
+    PORTA = 0;
+    PORTB = 0; // PORTB initialisation ’0’
+    PORTC = 0;
+    PORTD = 0;
+    PORTE=0;
+    TRISA = 0;
+    TRISB = 0; // Configure PORTB en outputs
+    TRISC = 0;
+    TRISD = 0;
+    TRISE=1;
+    ADCON1=0b00001011;
+    ADCON2=0b10000001;
+    Lcd_Init();
+    Lcd_Cmd(_LCD_CLEAR);
+    Lcd_Cmd(_LCD_CURSOR_OFF);
+    do {
+      }
+      while(PORTE.RE0==0);  // affichage des differents variable de sante
+      Lcd_Out(1,1,"167bpm 37C ");
+      Lcd_Out(2,1,"140/90mmHg ");
+      while(i<5)
+        {
+           i++;
+            // le bilan du patient
+            Delay_ms(100);
+            PORTD=0b10010010;
+            Delay_ms(100);
+            PORTD=0b10010010;
+        }
+
+        Lcd_Cmd(_LCD_CLEAR);
+        Lcd_Out(1,1,"Arret cardiaque");  // description du malaise+ info sur la chambre et le patient
+        Lcd_Out(2,1,"Salle 316");
+        i=0;
+        while(i<5)
+          {
+             i++;
+             PORTD=PORTD+1;
+             Sound_Init(&PORTE,1);        // simulation arret cardiaque
+             Sound_Play(2000,200);
+             delay_ms(200);
+           }
+        PORTD=0b11111111;
+        Delay_ms(4000);
+        Lcd_Cmd(_LCD_CLEAR);
+        i=0;
+        PORTD=0b00000000;
+        Lcd_Out(1,1,"appeler");
+        Lcd_Out(2,1,"Medecin ...");
+        while(i<5)
+          {
+             i++;
+             PORTD=PORTD+1;
+             Sound_Init(&PORTE,1);
+             Sound_Play(200,700);         // son de sonnerie de telephone
+             delay_ms(700);
+           }
+           PORTD=0b00000000;
+           i=0;
+           Lcd_Cmd(_LCD_CLEAR);
+           Lcd_Out(1,1,"Tension ");
+           Lcd_Out(2,1,"Normale");
+           while(i<5)
+            {
+               i++;
+               PORTD=PORTD+1;
+               Sound_Init(&PORTE,1);
+               Sound_Play(200,100);           // son d'une tension chez un patient normal
+               delay_ms(800);
+             }
+           Lcd_Cmd(_LCD_CLEAR);   // fin du test bilan patient
+           do {   // capteur gps integrer dans le bracelet du patient
+           }
+           while(PORTE.RE0==0);
+           Lcd_Out(1,1,"patient d34");
+           Lcd_Out(2,1,"hors perimetre");
+           i=0;
+           PORTD=0b00000000;
+           while(i<5)
+            {
+               i++;
+               PORTD=PORTD+1;
+               Sound_Init(&PORTE,1);
+               Sound_Play(2000,200);
+               delay_ms(200);
+             }
+          PORTD=0b11111111;
+          Delay_ms(4000);
+          Lcd_Cmd(_LCD_CLEAR);
+          i=0;
+          PORTD=0b00000000;
+          Lcd_Out(1,1,"appeler");      // appeler la securite
+          Lcd_Out(2,1,"SECURITE ...");
+          while(i<5)
+            {
+               i++;
+               PORTD=PORTD+1;
+               Sound_Init(&PORTE,1);
+               Sound_Play(200,700);
+               delay_ms(700);
+             }
+             PORTD=0b00000000;
+             Lcd_Cmd(_LCD_CLEAR);
+             Lcd_Out(1,1,"Patient ");          // patient trouve
+             Lcd_Out(2,1,"Trouve");
+}
